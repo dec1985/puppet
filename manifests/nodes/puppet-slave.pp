@@ -1,0 +1,2 @@
+node 'puppet-slave' {
+}
