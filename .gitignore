@@ -35,3 +35,5 @@ build/
 
 # used for geppetto
 .project
+# used for hiera
+hieradata
