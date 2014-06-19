@@ -24,17 +24,54 @@ class application_base {
              'python2.7-dev',
              # conflict with Class['python']
              #'python-virtualenv'
+
+             # below is for hns - db
+             #'postgresql-9.1',
+             'postgresql-9.1-postgis',
+             #'postgresql-server-dev-9.1',
+             # below is for hns
+              'libpq-dev',
+              'libgeos-dev',
+              'libyaml-dev',
+              'libboost-dev',
+              'libevent-dev',
+              'autoconf',
+              'automake',
+              'libtool',
+              'ruby-dev',
+              'bison',
+              'flex',
+              'colordiff',
+              # confilct with puppetlibs-gcc module
+              #'build-essential',
+              'pkg-config',
+              'protobuf-compiler',
+              'python-protobuf',
              ]:
     ensure => present,
   }
 }
 
-class my_python {
-  #vcsrepo { '/tmp/vcstest-git-clone':
-  #  ensure   => present,
-  #  provider => git,
-  #  source   => 'git://github.com/bruce/rtex.git',
-  #}
+class code {
+  user { 'highnoon':
+    ensure => 'present',
+    home => '/home/highnoon',
+    managehome => true,
+    shell => '/bin/bash',
+  }->
+  netrc::foruser{"highnoon":
+    user => 'highnoon',
+    machine_user_password_triples => ['i.happylatte.com',hiera('gituser'),hiera('gitpasswd')],
+  }->
+  vcsrepo { '/home/highnoon/highnoon':
+    ensure   => present,
+    user => 'highnoon',
+    provider => git,
+    source   => 'https://i.happylatte.com/labs/git/highnoon.git',
+  }
+}
+
+class python_env {
   class { 'python':
     pip => true,
     dev => true,
@@ -102,7 +139,8 @@ node 'puppet-slave1' {
   }
 
   include application_base
-  include my_python
+  include code
+  include python_env
 }
 
 node default {

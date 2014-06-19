@@ -37,3 +37,6 @@ build/
 .project
 # used for hiera
 hieradata
+
+# vim temp file
+*.swp

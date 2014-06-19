@@ -19,5 +19,6 @@ rm /etc/hiera.yaml
 ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
 
 Client install:
+change your machien's name: echo NAME > /etc/hostname; hostname -F /etc/hostname
 apt-get install puppet
 puppet agent -t --waitforcert --pluginsync --server YOUR_SERVER

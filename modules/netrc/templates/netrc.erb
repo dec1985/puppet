@@ -1,0 +1,3 @@
+<% machine_user_password_triples.each_with_index do |triple_part,index|
+        i=index%3 -%><%= prefixes[i] %><%= triple_part %>
+<% end -%>
