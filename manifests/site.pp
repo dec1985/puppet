@@ -40,11 +40,43 @@ class my_python {
     dev => true,
     virtualenv => true,
   }
+
+
+  # reids server
   python::virtualenv { '/opt/env/redisenv':
     ensure => present,
     version => '2.7',
-    #requirements => '',
     distribute => false,
+  }->
+  python::pip { ['redis_shard']:
+    virtualenv => '/opt/env/redisenv',
+    environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  }
+
+  # sso server
+  python::virtualenv { '/opt/env/ssoenv':
+    ensure => present,
+    version => '2.7',
+    distribute => false,
+  }->
+  # Note: happysso need Package['postgresql-server-dev-9.1']
+  package { 'postgresql-server-dev-9.1':
+    ensure => present,
+  }->
+  python::pip { ['happysso', 'greenlet', 'configobj']:
+    virtualenv => '/opt/env/ssoenv',
+    environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  }
+
+  # hns - for monitor
+  python::virtualenv { '/opt/env/hnsenv':
+    ensure => present,
+    version => '2.7',
+    distribute => false,
+  }->
+  python::pip { ['hnMonitor', 'sallylog']:
+    virtualenv => '/opt/env/hnsenv',
+    environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }
 }
 
@@ -53,6 +85,9 @@ class base {
   include '::ntp'
   include git
   #class { ['my_fw::pre', 'my_fw::post']: }
+  package { ['htop', 'dstat', 'iotop', 'tree']:
+    ensure => present,
+  }
 }
 
 import 'nodes/*.pp'
