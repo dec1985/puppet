@@ -10,7 +10,7 @@ import 'postgres.pp'
 import 'nodes/*.pp'
 
 node 'puppet-slave1' {
-  include base
+#  include base
 
   include postgres
 
@@ -25,5 +25,14 @@ node 'puppet-slave1' {
 
 node default {
   include base
+  include postgres
+
+  class { 'redis':
+    version => '2.6.7',
+  }
+
+  include application_base
+  include code
+  include python_env
 }
 

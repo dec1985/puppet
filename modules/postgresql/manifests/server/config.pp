@@ -40,13 +40,13 @@ class postgresql::server::config {
         postgresql::server::pg_hba_rule { 'local access as postgres user':
           type        => 'local',
           user        => $user,
-          auth_method => 'ident',
+          auth_method => 'trust',
           auth_option => $local_auth_option,
           order       => '001',
         }
         postgresql::server::pg_hba_rule { 'local access to database with same name':
           type        => 'local',
-          auth_method => 'ident',
+          auth_method => 'trust',
           auth_option => $local_auth_option,
           order       => '002',
         }
@@ -54,7 +54,7 @@ class postgresql::server::config {
           type        => 'host',
           user        => $user,
           address     => '127.0.0.1/32',
-          auth_method => 'md5',
+          auth_method => 'trust',
           order       => '003',
         }
         postgresql::server::pg_hba_rule { 'deny access to postgresql user':
@@ -74,15 +74,15 @@ class postgresql::server::config {
         postgresql::server::pg_hba_rule { 'allow access to all users':
           type        => 'host',
           address     => $ip_mask_allow_all_users,
-          auth_method => 'md5',
+          auth_method => 'trust',
           order       => '100',
         }
-        postgresql::server::pg_hba_rule { 'allow access to ipv6 localhost':
-          type        => 'host',
-          address     => '::1/128',
-          auth_method => 'md5',
-          order       => '101',
-        }
+        #postgresql::server::pg_hba_rule { 'allow access to ipv6 localhost':
+        #  type        => 'host',
+        #  address     => '::1/128',
+        #  auth_method => 'md5',
+        #  order       => '101',
+        #}
 
         # ipv6acls are passed as an array of rule strings, here we transform
         # them into a resources hash, and pass the result to create_resources

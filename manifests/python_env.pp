@@ -50,6 +50,11 @@ class python_env {
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }
   # hns
+  file { '/home/highnoon/log':
+    ensure => directory,
+    owner => 'highnoon',
+    group => 'highnoon',
+  }
   python::virtualenv { '/home/highnoon/hnenv':
     ensure => present,
     version => '2.7',
@@ -116,6 +121,7 @@ class python_env {
                  'hnMission==0.0.45.32',
                  'statsproto==0.0.32']:
     virtualenv => '/home/highnoon/hnenv',
+    owner => 'highnoon',
     environment => ['PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
                     'ARCHFLAGS="-arch i386 -arch x86_64"'],
   }
