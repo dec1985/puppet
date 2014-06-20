@@ -1,0 +1,7 @@
+[ heartbeat ]
+heartbeat_monitor = tcp://<%= @ipaddress %>:7899
+
+[ service ]
+yellow_service = tcp://<%= @ipaddress %>:7890
+update_publisher = tcp://<%= @ipaddress %>:7891
+ip_retriever_host = <%= @ipaddress %>

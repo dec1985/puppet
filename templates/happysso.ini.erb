@@ -1,0 +1,44 @@
+[Logging]
+# logging file
+config_file = local_logging_base.cfg
+
+[Email]
+smtp_server = localhost
+
+[YellowAgent]
+host = <%= @ipaddress %>
+
+[Portal]
+external_address = http://<%= @ipaddress_eth1 %>:9001
+redis_host = sso-redis1
+redis_port = 6379
+
+[Database]
+host = sso-postgres1
+
+[Redis]
+# redis services to redis server name, the sever name must exist in Servers
+email_redis = common
+token_redis = common
+session_redis = sso_session
+lockout_user_redis = lockout_user
+
+# redis servers
+    [[Servers]]
+        # common redis host and port
+        [[[common]]]
+        host = sso-redis1
+        port = 6381
+        using_shard = False
+
+        # the sso session redis host and port
+        [[[sso_session]]]
+        host = sso-redis1
+        port = 46379
+        using_shard = True
+
+        # the lockout user redis host and port
+        [[[lockout_user]]]
+        host = sso-redis1
+        port = 6383
+        using_shard = False

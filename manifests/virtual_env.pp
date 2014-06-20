@@ -1,6 +1,7 @@
 class virtual_env {
   file { ['/opt/env',
           '/opt/log',
+          '/opt/redis-backup',
           ]:
     ensure => 'directory',
     owner => 'root',
@@ -29,14 +30,21 @@ define log_config_file($etc) {
 class sso_redis_env {
   $env = '/opt/env/redisenv'
   $etc = "$env/etc"
-  $yellow = '10.171.21.40'
+  $yellow = '10.171.25.210'
 
   python::virtualenv { $env:
     ensure => present,
     version => '2.7',
     distribute => false,
   }->
-  python::pip { ['redis_shard']:
+  exec { 'downgrade pip to 1.1':
+    command => '/opt/env/redisenv/bin/easy_install -U pip==1.1',
+  }->
+  python::pip { ['redis_shard',
+                 'sallyutils',
+                 'etYellowUtils==0.5.4-r2',
+                 'yellowGevent==0.2.6a',
+                 'redisd==0.6.0']:
     virtualenv => '/opt/env/redisenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }->
@@ -65,6 +73,8 @@ class sso_redis_env {
 }
 
 class sso_app_env {
+  $etc = '/opt/env/ssoenv/etc'
+  $yellow = '10.171.25.210'
   python::virtualenv { '/opt/env/ssoenv':
     ensure => present,
     version => '2.7',
@@ -74,9 +84,21 @@ class sso_app_env {
   package { 'postgresql-server-dev-9.1':
     ensure => present,
   }->
-  python::pip { ['happysso', 'greenlet', 'configobj']:
+  python::pip { ['happysso==0.10.23',
+                 'greenlet',
+                 'configobj']:
     virtualenv => '/opt/env/ssoenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  }->
+  file { "$etc/happysso.d/happysso.ini":
+    content => template('happysso.ini.erb'),
+  }->
+  file { 'yellowGevent.ini':
+    path => "$etc/yellowGevent.d/yellowGevent.ini",
+    content => template('yellowGevent.ini.erb'),
+  }->
+  log_config_file { ['logging_base',]:
+    etc => $etc
   }
 }
 
@@ -93,6 +115,8 @@ class sso_monitor_env {
 }
 
 class hns_env {
+  $etc = '/home/highnoon/hnenv/etc'
+  $yellow = $::ipaddress
   python::virtualenv { '/home/highnoon/hnenv':
     ensure => present,
     version => '2.7',
@@ -127,5 +151,13 @@ class hns_env {
     cwd => '/home/highnoon',
     environment => ['PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
                     'ARCHFLAGS="-arch i386 -arch x86_64"'],
+  }->
+  file { '/home/highnoon/hnenv/etc/hnYellow.d/hnYellow.ini':
+    content => template('hnYellow.ini.erb'),
+  }
+  config_file { ['etYellowUtils',
+                  ]:
+    etc => $etc,
+    yellow => $yellow,
   }
 }
