@@ -1,5 +1,7 @@
 class virtual_env {
-  file { '/opt/env':
+  file { ['/opt/env',
+          '/opt/log',
+          ]:
     ensure => 'directory',
     owner => 'root',
     group => 'root',
@@ -13,8 +15,23 @@ class virtual_env {
   }
 }
 
+define config_file($etc, $yellow) {
+  file { "$etc/$title.d/$title.ini":
+    content => template("$title.ini.erb"),
+  }
+}
+define log_config_file($etc) {
+  file { "$etc/local_$title.cfg":
+    content => template("log.cfg.erb"),
+  }
+}
+
 class sso_redis_env {
-  python::virtualenv { '/opt/env/redisenv':
+  $env = '/opt/env/redisenv'
+  $etc = "$env/etc"
+  $yellow = '10.171.21.40'
+
+  python::virtualenv { $env:
     ensure => present,
     version => '2.7',
     distribute => false,
@@ -22,6 +39,28 @@ class sso_redis_env {
   python::pip { ['redis_shard']:
     virtualenv => '/opt/env/redisenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  }->
+  file { ["$etc/sentineld.d",
+          "$etc/twemproxyd.d",
+          "$etc/sentineld_notification.d",
+          "$etc/redis_farm.d"]:
+    ensure => directory,
+  }->
+  config_file { ['etYellowUtils',
+                 'yellowGevent',
+                 'sentineld',
+                 'twemproxyd',
+                 'sentineld_notification',
+                 'redis_farm',
+                  ]:
+    etc => $etc,
+    yellow => $yellow,
+  }
+  log_config_file { ['sentineld_logging_base',
+                     'twemproxyd_logging_base',
+                     'sentineld_notification_logging_base',
+                     ]:
+    etc => $etc,
   }
 }
 

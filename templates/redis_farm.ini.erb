@@ -1,0 +1,56 @@
+[masterA]
+    host = '127.0.0.1'
+    port = 36379
+    save = '900 1'
+    aof = True
+    dbfilename = 'dump-masterA.rdb'
+    appendfilename = 'dump-masterA.aof'
+
+   [[slaves]]
+       [[[slaveA]]]
+           host = '127.0.0.1'
+           port = 36380
+           dbfilename = 'dump-slaveA.rdb'
+           appendfilename = 'dump-slaveA.aof'
+
+[masterB]
+    host = '127.0.0.1'
+    port = 36381
+    aof = True
+    dbfilename = 'dump-masterB.rdb'
+    appendfilename = 'dump-masterB.aof'
+
+   [[slaves]]
+       [[[slaveB]]]
+           host = '127.0.0.1'
+           port = 36382
+           dbfilename = 'dump-slaveB.rdb'
+           appendfilename = 'dump-slaveB.aof'
+
+[masterC]
+    host = '127.0.0.1'
+    port = 36383
+    aof = True
+    dbfilename = 'dump-masterC.rdb'
+    appendfilename = 'dump-masterC.aof'
+
+   [[slaves]]
+       [[[slaveC]]]
+           host = '127.0.0.1'
+           port = 36384
+           dbfilename = 'dump-slaveC.rdb'
+           appendfilename = 'dump-slaveC.aof'
+
+[masterD]
+    host = '127.0.0.1'
+    port = 36385
+    aof = True
+    dbfilename = 'dump-masterD.rdb'
+    appendfilename = 'dump-masterD.aof'
+
+   [[slaves]]
+       [[[slaveD]]]
+           host = '127.0.0.1'
+           port = 36386
+           dbfilename = 'dump-slaveD.rdb'
+           appendfilename = 'dump-slaveD.aof'

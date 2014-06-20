@@ -1,0 +1,49 @@
+[sentineld]
+name = sentineld
+host = 127.0.0.1
+port = 26379
+
+[masters]
+   [[masterA]]
+    host = 127.0.0.1
+    port = 36379
+    level = 2
+    down_after_ms = 10000
+    failover_timeout = 90000
+    can_failover = yes
+    parallel_syncs = 1
+    notification_script = redis_down_notification.py
+
+   [[masterB]]
+    host = 127.0.0.1
+    port = 36381
+    level = 2
+    down_after_ms = 10000
+    failover_timeout = 90000
+    can_failover = yes
+    parallel_syncs = 1
+    notification_script = redis_down_notification.py
+
+   [[masterC]]
+    host = 127.0.0.1
+    port = 36383
+    level = 2
+    down_after_ms = 10000
+    failover_timeout = 90000
+    can_failover = yes
+    parallel_syncs = 1
+    notification_script = redis_down_notification.py
+
+   [[masterD]]
+    host = 127.0.0.1
+    port = 36385
+    level = 2
+    down_after_ms = 10000
+    failover_timeout = 90000
+    can_failover = yes
+    parallel_syncs = 1
+    notification_script = redis_down_notification.py
+[Logging]
+# logging file
+config_file = sentineld_logging_base.cfg
+

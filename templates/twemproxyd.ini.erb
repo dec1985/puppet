@@ -1,0 +1,12 @@
+[Twemproxy]
+name = twemproxyd
+host = 127.0.0.1
+port = 6390
+stats_port = 22222
+check_master_interval = 90
+redis = masterA, masterB
+
+
+[Logging]
+# logging file
+config_file = twemproxyd_logging_base.cfg

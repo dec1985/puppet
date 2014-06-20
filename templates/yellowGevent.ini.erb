@@ -1,0 +1,31 @@
+[ yellow ]
+[[ server1 ]]
+heartbeat_monitor = tcp://<%= @yellow %>:7899
+yellow_server = tcp://<%= @yellow %>:7890
+update_publisher = tcp://<%= @yellow %>:7891
+
+#[[ server2 ]]
+#heartbeat_monitor = tcp://172.20.1.55:7899
+#yellow_server = tcp://172.20.1.55:7890
+#update_publisher = tcp://172.20.1.55:7891
+
+[ heartbeat ]
+heartbeat_interval = 1.0
+
+[ service ]
+update_sync_interval = 60
+lookup_timeout = 1.0
+lookup_retries = 10
+
+[ dealer ]
+uuid_pool_gen_size = 5
+
+[ HWM ]
+simple_dealer = 1000
+update_subscriber = 1000
+yellow_dealer = 1000
+heartbeat_sender = 8
+
+[app]
+is_sso = False
+app_id =
