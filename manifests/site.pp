@@ -31,8 +31,7 @@ class sso {
   include virtual_env
   include sso_redis_env
   include sso_app_env
-  # TODO: add it later
-  #include sso_monitor_env
+  include sso_monitor_env
 }
 
 

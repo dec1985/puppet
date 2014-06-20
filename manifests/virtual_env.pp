@@ -103,14 +103,35 @@ class sso_app_env {
 }
 
 class sso_monitor_env {
+  $etc = '/opt/env/hnsenv/etc'
+  $yellow = '10.171.25.210'
   python::virtualenv { '/opt/env/hnsenv':
     ensure => present,
     version => '2.7',
     distribute => false,
   }->
-  python::pip { ['hnMonitor', 'sallylog']:
+  # TODO: uncomment, another duplicate.
+  #exec { 'downgrade pip to 1.1':
+    #command => '/opt/env/hnsenv/bin/easy_install -U pip==1.1',
+  #}->
+  python::pip { ['hnMonitor', 'sallylog', 'hnMunin',
+# TODO: you need to re-enable below 2 packages for a fresh machine, but comment here because:
+#Duplicate declaration: Python::Pip[sallyutils] is already declared in file /etc/puppet/manifests/virtual_env.pp:50
+                 #'sallyutils',
+                 #'etYellowUtils==0.5.4-r2',
+                 ]:
     virtualenv => '/opt/env/hnsenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  }->
+  file { "$etc/etYellowUtils.d/etYellowUtils.ini":
+    content => template('etYellowUtils.ini.erb'),
+  }->
+  file { '/etc/munin/plugins/sso':
+    source => 'puppet:///extra_files/munin.py',
+    mode => 0777,
+  }~>
+  exec { 'reload munin':
+    command => '/opt/env/hnsenv/bin/register_munin_plugins.py sso; service munin-node restart',
   }
 }
 
