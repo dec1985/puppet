@@ -22,10 +22,10 @@ node 'puppet-slave1' {
   include python_env
 }
 
-# Dependencies
-Class['sso_package'] -> Class['sso_redis_env']
 
 class sso {
+  Class['sso_package'] -> Class['sso_redis_env']
+
   include base
   include sso_package
   include virtual_env
@@ -51,6 +51,8 @@ node /sso-server\d+/ {
 }
 
 node /hns\d+/ {
+  Class['hns_package'] -> Class['hns_code'] -> Class['hns_env']
+
   include base
   include hns_package
   include hns_code
