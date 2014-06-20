@@ -1,4 +1,4 @@
-class code {
+class hns_code {
   user { 'highnoon':
     ensure => 'present',
     home => '/home/highnoon',

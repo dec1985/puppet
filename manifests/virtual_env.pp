@@ -1,4 +1,4 @@
-class python_env {
+class virtual_env {
   file { '/opt/env':
     ensure => 'directory',
     owner => 'root',
@@ -10,10 +10,10 @@ class python_env {
     pip => true,
     dev => true,
     virtualenv => true,
-  }->
+  }
+}
 
-
-  # reids server
+class sso_redis_env {
   python::virtualenv { '/opt/env/redisenv':
     ensure => present,
     version => '2.7',
@@ -23,8 +23,9 @@ class python_env {
     virtualenv => '/opt/env/redisenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }
+}
 
-  # sso server
+class sso_app_env {
   python::virtualenv { '/opt/env/ssoenv':
     ensure => present,
     version => '2.7',
@@ -38,8 +39,9 @@ class python_env {
     virtualenv => '/opt/env/ssoenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }
+}
 
-  # sso monitor
+class sso_monitor_env {
   python::virtualenv { '/opt/env/hnsenv':
     ensure => present,
     version => '2.7',
@@ -49,19 +51,30 @@ class python_env {
     virtualenv => '/opt/env/hnsenv',
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
   }
+}
 
-  # hns
-  file { '/home/highnoon/log':
-    ensure => directory,
-    owner => 'highnoon',
-    group => 'highnoon',
-  }
+class hns_env {
   python::virtualenv { '/home/highnoon/hnenv':
     ensure => present,
     version => '2.7',
     distribute => false,
     owner => 'highnoon',
     group => 'highnoon',
+  }->
+  file { '/home/highnoon/log':
+    ensure => directory,
+    owner => 'highnoon',
+    group => 'highnoon',
+  }
+  # TODO: remove this after you get the /root/.init files.
+  # install requirements has a bug which need to write something to /root/.init/
+  file { ['/root/']:
+    ensure => directory,
+    mode => 0755,
+  }->
+  file { ['/root/.init']:
+    ensure => directory,
+    mode => 0777,
   }->
   file { '/etc/requirements.txt':
     ensure => present,
