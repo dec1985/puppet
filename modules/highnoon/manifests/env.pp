@@ -1,4 +1,4 @@
-$yellow = hiera('yellow')
+$yellow = '10.171.21.248'
 
 class highnoon::env {
   file { ['/opt/env',
@@ -19,12 +19,12 @@ class highnoon::env {
 
 define config_file($etc, $yellow) {
   file { "$etc/$title.d/$title.ini":
-    content => template("$title.ini.erb"),
+    content => template("highnoon/$title.ini.erb"),
   }
 }
 define log_config_file($etc) {
   file { "$etc/local_$title.cfg":
-    content => template("log.cfg.erb"),
+    content => template("highnoon/log.cfg.erb"),
   }
 }
 
@@ -48,7 +48,7 @@ define highnoon_env($env_name,
     owner => $owner,
   }->
   file { "${env}/requirements":
-    source => "puppet:///extra_files/${env_name}_requirements.txt",
+    source => "puppet:///modules/highnoon/${env_name}_requirements.txt",
     owner => $owner,
     group => $group,
   }->
@@ -112,12 +112,12 @@ class highnoon::sso_app_env {
     etc => "$etc",
   }
   file { "$etc/happysso.d/happysso.ini":
-    content => template('happysso.ini.erb'),
+    content => template('highnoon/happysso.ini.erb'),
     require => Highnoon_env["$env_name"],
   }
   file { 'yellowGevent.ini':
     path => "$etc/yellowGevent.d/yellowGevent.ini",
-    content => template('yellowGevent.ini.erb'),
+    content => template('highnoon/yellowGevent.ini.erb'),
     require => Highnoon_env["$env_name"],
   }
   log_config_file { ['logging_base',]:
@@ -137,10 +137,10 @@ class highnoon::sso_monitor_env {
     etc => "$etc",
   }->
   file { "$etc/etYellowUtils.d/etYellowUtils.ini":
-    content => template('etYellowUtils.ini.erb'),
+    content => template('highnoon/etYellowUtils.ini.erb'),
   }->
   file { '/etc/munin/plugins/sso':
-    source => 'puppet:///extra_files/munin.py',
+    source => 'puppet:///modules/highnoon/munin.py',
     mode => 0777,
   }~>
   exec { 'reload munin':

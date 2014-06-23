@@ -30,12 +30,12 @@ class highnoon::hns_env {
   }
 
   file { "$etc/hnYellow.d/hnYellow.ini":
-    content => template('hnYellow.ini.erb'),
+    content => template('highnoon/hnYellow.ini.erb'),
     require => Highnoon_env["$env_name"],
     owner => 'highnoon',
   }
   file { "$etc/etYellowUtils.d/etYellowUtils.ini":
-    content => template('etYellowUtils.ini.erb'),
+    content => template('highnoon/etYellowUtils.ini.erb'),
     require => Highnoon_env["$env_name"],
     owner => 'highnoon',
   }

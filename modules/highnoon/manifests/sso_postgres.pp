@@ -11,11 +11,11 @@ class highnoon::sso_postgres {
   # TODO: fix the depndency, this two files both notify Exec.
   file { '/etc/database.sql':
     ensure => present,
-    source => 'puppet:///extra_files/database.sql',
+    source => 'puppet:///modules/highnoon/database.sql',
   }->
   file { '/etc/update.sql':
     ensure => present,
-    source => 'puppet:///extra_files/update.sql',
+    source => 'puppet:///modules/highnoon/update.sql',
   }~>
   exec { '/etc/init_sso_db':
     command => 'psql -U happylatte -f /etc/database.sql happyUsers; psql -U happylatte -f /etc/update.sql happyUsers; touch /etc/init_sso_db;',
