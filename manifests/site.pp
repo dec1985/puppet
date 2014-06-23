@@ -8,20 +8,6 @@ import 'postgres.pp'
 
 import 'nodes/*.pp'
 
-node 'puppet-slave1' {
-#  include base
-
-  include postgres
-
-  class { 'redis':
-    version => '2.6.7',
-  }
-
-  include application_base
-  include code
-  include python_env
-}
-
 
 class sso {
   Class['sso_package'] -> Class['sso_redis_env']
