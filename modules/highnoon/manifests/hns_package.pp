@@ -1,26 +1,5 @@
-@package { ['libzmq-dev',
-            'swig',
-            'make']:
-  ensure => present,
-}
-
-class sso_package {
-  realize( Package['libzmq-dev'] )
-  realize( Package['swig'] )
-  realize( Package['make'] )
-  package { [# already installed on ubuntu12.04 directly
-             'python2.7',
-             # Class['python'] will install python-dev, is it enough?
-             'python2.7-dev',
-             # conflict with Class['python']
-             #'python-virtualenv'
-             'libgeoip-dev',
-             ]:
-    ensure => present,
-  }
-}
-
-class hns_package {
+class highnoon::hns_package {
+  include highnoon::virtual
   realize( Package['libzmq-dev'] )
   realize( Package['swig'] )
   realize( Package['make'] )

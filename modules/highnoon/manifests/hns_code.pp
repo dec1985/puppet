@@ -1,10 +1,13 @@
-class hns_code {
-  User <| name == 'highnoon' |> {
-  }->
+include highnoon::virtual
+
+class highnoon::hns_code {
+  realize( User['highnoon'])
+
   netrc::foruser{"highnoon":
     user => 'highnoon',
     # TODO: don't accept group parameter, the default group is root.
     machine_user_password_triples => ['i.happylatte.com',hiera('gituser'),hiera('gitpasswd')],
+    require => User['highnoon'],
   }->
   vcsrepo { '/home/highnoon/highnoon':
     ensure   => present,

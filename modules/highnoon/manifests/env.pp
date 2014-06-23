@@ -1,6 +1,6 @@
 $yellow = hiera('yellow')
 
-class virtual_env {
+class highnoon::env {
   file { ['/opt/env',
           '/opt/log',
           '/opt/redis-backup',
@@ -28,7 +28,7 @@ define log_config_file($etc) {
   }
 }
 
-define sso_env($env_name,
+define highnoon_env($env_name,
   $env,
   $etc,
   $owner = 'root',
@@ -50,6 +50,7 @@ define sso_env($env_name,
   file { "${env}/requirements":
     source => "puppet:///extra_files/${env_name}_requirements.txt",
     owner => $owner,
+    group => $group,
   }->
   python::requirements { "${env}_packages":
     virtualenv => "$env",
@@ -58,12 +59,12 @@ define sso_env($env_name,
   }
 }
 
-class sso_redis_env {
+class highnoon::sso_redis_env {
   $env_name = 'redisenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
 
-  sso_env { "$env_name":
+  highnoon_env { "$env_name":
     env_name => "$env_name",
     env => "$env",
     etc => "$etc",
@@ -74,7 +75,7 @@ class sso_redis_env {
           "$etc/sentineld_notification.d",
           "$etc/redis_farm.d"]:
     ensure => directory,
-    require => Sso_env["$env_name"],
+    require => Highnoon_env["$env_name"],
   }->
   config_file { ['etYellowUtils',
                  'yellowGevent',
@@ -92,11 +93,11 @@ class sso_redis_env {
                      'sentineld_notification_logging_base',
                      ]:
     etc => $etc,
-    require => Sso_env["$env_name"],
+    require => Highnoon_env["$env_name"],
   }
 }
 
-class sso_app_env {
+class highnoon::sso_app_env {
   $env_name = 'ssoenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
@@ -105,32 +106,32 @@ class sso_app_env {
   #package { 'postgresql-server-dev-9.1':
   #  ensure => present,
   #}->
-  sso_env { "$env_name":
+  highnoon_env { "$env_name":
     env_name => "$env_name",
     env => "$env",
     etc => "$etc",
   }
   file { "$etc/happysso.d/happysso.ini":
     content => template('happysso.ini.erb'),
-    require => Sso_env["$env_name"],
+    require => Highnoon_env["$env_name"],
   }
   file { 'yellowGevent.ini':
     path => "$etc/yellowGevent.d/yellowGevent.ini",
     content => template('yellowGevent.ini.erb'),
-    require => Sso_env["$env_name"],
+    require => Highnoon_env["$env_name"],
   }
   log_config_file { ['logging_base',]:
     etc => $etc,
-    require => Sso_env["$env_name"],
+    require => Highnoon_env["$env_name"],
   }
 }
 
-class sso_monitor_env {
+class highnoon::sso_monitor_env {
   $env_name = 'monitorenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
 
-  sso_env { "$env_name":
+  highnoon_env { "$env_name":
     env_name => "$env_name",
     env => "$env",
     etc => "$etc",
@@ -147,55 +148,3 @@ class sso_monitor_env {
   }
 }
 
-class hns_env {
-  $env_name = 'hnenv'
-  $env = "/home/highnoon/$env_name"
-  $etc = "$env/etc"
-
-  User <| name == 'highnoon' |> {
-  }->
-  file { '/home/highnoon/log':
-    ensure => directory,
-    owner => 'highnoon',
-    group => 'highnoon',
-  }->
-  # TODO: remove this after you get the /root/.init files.
-  # install requirements has a bug which need to write something to /root/.init/
-  file { ['/root/']:
-    ensure => directory,
-    mode => 0755,
-  }->
-  file { ['/root/.init']:
-    ensure => directory,
-    mode => 0777,
-  }->
-  sso_env { "$env_name":
-    env_name => "$env_name",
-    env => "$env",
-    etc => "$etc",
-    owner => 'highnoon',
-    group => 'highnoon',
-  }
-
-  #file { '/etc/requirements.txt':
-    #ensure => present,
-    #source => 'puppet:///extra_files/requirements.txt',
-  #}~>
-  #exec { 'setup.sh':
-  #  command => 'pip install -r /etc/requirements.txt > /tmp/setup.sh.log',
-  #  user => 'highnoon',
-  #  group => 'highnoon',
-  #  path => ['/home/highnoon/hnenv/bin/', '/usr/local/bin', '/usr/bin', '/bin'],
-  #  cwd => '/home/highnoon',
-  #  environment => ['PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
-  #                  'ARCHFLAGS="-arch i386 -arch x86_64"'],
-  #}->
-  file { "$etc/hnYellow.d/hnYellow.ini":
-    content => template('hnYellow.ini.erb'),
-    require => Sso_env["$env_name"],
-  }
-  file { "$etc/etYellowUtils.d/etYellowUtils.ini":
-    content => template('etYellowUtils.ini.erb'),
-    require => Sso_env["$env_name"],
-  }
-}
