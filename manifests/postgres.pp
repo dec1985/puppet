@@ -1,4 +1,9 @@
 class postgres {
+  package { [#'postgresql-9.1',
+             #'postgresql-server-dev-9.1',
+             'postgresql-9.1-postgis']:
+    ensure => present,
+  }
   class { 'postgresql::server':
     listen_addresses => '*',
     postgres_password => 'TPSrep0rt!',
@@ -14,6 +19,7 @@ class postgres {
 }
 
 class sso_postgres {
+  include postgres
   postgresql::server::role { 'happylatte':
     createrole => true,
     superuser => true,
@@ -39,6 +45,7 @@ class sso_postgres {
 }
 
 class hns_postgres {
+  include postgres
   postgresql::server::role { 'highnoon':
     createrole => true,
     superuser => true,

@@ -1,0 +1,5 @@
+redis_shard
+sallyutils
+etYellowUtils==0.5.4-r2
+yellowGevent==0.2.6a
+redisd==0.6.0

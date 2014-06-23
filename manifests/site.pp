@@ -10,14 +10,27 @@ import 'nodes/*.pp'
 
 
 class sso {
-  Class['sso_package'] -> Class['sso_redis_env']
-
   include base
   include sso_package
+  include sso_postgres
   include virtual_env
   include sso_redis_env
   include sso_app_env
   include sso_monitor_env
+
+  Class['sso_package'] -> Class['sso_postgres'] -> Class['virtual_env'] -> Class['sso_redis_env', 'sso_app_env', 'sso_monitor_env']
+}
+
+class hns {
+  include base
+  include hns_package
+  include hns_code
+  include hns_postgres
+  include virtual_env
+  include hns_env
+
+  # postgres depends on code bacause it need to run some sql command which in code base
+  Class['hns_package'] -> Class['hns_code'] -> Class['hns_postgres'] -> Class['virtual_env'] -> Class['hns_env']
 }
 
 
@@ -49,5 +62,6 @@ node /hns\d+/ {
 
 node default {
   include base
+  include hns
 }
 

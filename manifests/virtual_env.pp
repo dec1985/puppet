@@ -1,3 +1,5 @@
+$yellow = hiera('yellow')
+
 class virtual_env {
   file { ['/opt/env',
           '/opt/log',
@@ -6,7 +8,6 @@ class virtual_env {
     ensure => 'directory',
     owner => 'root',
     group => 'root',
-    # so everyone can create sub folder.
     mode => 0777,
   }->
   class { 'python':
@@ -27,32 +28,53 @@ define log_config_file($etc) {
   }
 }
 
-class sso_redis_env {
-  $env = '/opt/env/redisenv'
-  $etc = "$env/etc"
-  $yellow = '10.171.25.210'
-
+define sso_env($env_name,
+  $env,
+  $etc,
+  $owner = 'root',
+  $group = 'root',
+) {
   python::virtualenv { $env:
     ensure => present,
     version => '2.7',
     distribute => false,
+    owner => "$owner",
+    group => "$group",
   }->
-  exec { 'downgrade pip to 1.1':
-    command => '/opt/env/redisenv/bin/easy_install -U pip==1.1',
+  python::pip {"${env}_pip":
+    pkgname => 'pip',
+    ensure => '1.1',
+    virtualenv => "$env",
+    owner => $owner,
   }->
-  python::pip { ['redis_shard',
-                 'sallyutils',
-                 'etYellowUtils==0.5.4-r2',
-                 'yellowGevent==0.2.6a',
-                 'redisd==0.6.0']:
-    virtualenv => '/opt/env/redisenv',
+  file { "${env}/requirements":
+    source => "puppet:///extra_files/${env_name}_requirements.txt",
+    owner => $owner,
+  }->
+  python::requirements { "${env}_packages":
+    virtualenv => "$env",
+    requirements => "${env}/requirements",
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
-  }->
+  }
+}
+
+class sso_redis_env {
+  $env_name = 'redisenv'
+  $env = "/opt/env/$env_name"
+  $etc = "$env/etc"
+
+  sso_env { "$env_name":
+    env_name => "$env_name",
+    env => "$env",
+    etc => "$etc",
+  }
+
   file { ["$etc/sentineld.d",
           "$etc/twemproxyd.d",
           "$etc/sentineld_notification.d",
           "$etc/redis_farm.d"]:
     ensure => directory,
+    require => Sso_env["$env_name"],
   }->
   config_file { ['etYellowUtils',
                  'yellowGevent',
@@ -62,66 +84,56 @@ class sso_redis_env {
                  'redis_farm',
                   ]:
     etc => $etc,
-    yellow => $yellow,
+    yellow => $::yellow,
   }
+
   log_config_file { ['sentineld_logging_base',
                      'twemproxyd_logging_base',
                      'sentineld_notification_logging_base',
                      ]:
     etc => $etc,
+    require => Sso_env["$env_name"],
   }
 }
 
 class sso_app_env {
-  $etc = '/opt/env/ssoenv/etc'
-  $yellow = '10.171.25.210'
-  python::virtualenv { '/opt/env/ssoenv':
-    ensure => present,
-    version => '2.7',
-    distribute => false,
-  }->
-  # Note: happysso need Package['postgresql-server-dev-9.1']
-  package { 'postgresql-server-dev-9.1':
-    ensure => present,
-  }->
-  python::pip { ['happysso==0.10.23',
-                 'greenlet',
-                 'configobj']:
-    virtualenv => '/opt/env/ssoenv',
-    environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
-  }->
+  $env_name = 'ssoenv'
+  $env = "/opt/env/$env_name"
+  $etc = "$env/etc"
+
+  # Note: happysso need Package['postgresql-server-dev-9.1']?
+  #package { 'postgresql-server-dev-9.1':
+  #  ensure => present,
+  #}->
+  sso_env { "$env_name":
+    env_name => "$env_name",
+    env => "$env",
+    etc => "$etc",
+  }
   file { "$etc/happysso.d/happysso.ini":
     content => template('happysso.ini.erb'),
-  }->
+    require => Sso_env["$env_name"],
+  }
   file { 'yellowGevent.ini':
     path => "$etc/yellowGevent.d/yellowGevent.ini",
     content => template('yellowGevent.ini.erb'),
-  }->
+    require => Sso_env["$env_name"],
+  }
   log_config_file { ['logging_base',]:
-    etc => $etc
+    etc => $etc,
+    require => Sso_env["$env_name"],
   }
 }
 
 class sso_monitor_env {
-  $etc = '/opt/env/hnsenv/etc'
-  $yellow = '10.171.25.210'
-  python::virtualenv { '/opt/env/hnsenv':
-    ensure => present,
-    version => '2.7',
-    distribute => false,
-  }->
-  # TODO: uncomment, another duplicate.
-  #exec { 'downgrade pip to 1.1':
-    #command => '/opt/env/hnsenv/bin/easy_install -U pip==1.1',
-  #}->
-  python::pip { ['hnMonitor', 'sallylog', 'hnMunin',
-# TODO: you need to re-enable below 2 packages for a fresh machine, but comment here because:
-#Duplicate declaration: Python::Pip[sallyutils] is already declared in file /etc/puppet/manifests/virtual_env.pp:50
-                 #'sallyutils',
-                 #'etYellowUtils==0.5.4-r2',
-                 ]:
-    virtualenv => '/opt/env/hnsenv',
-    environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  $env_name = 'monitorenv'
+  $env = "/opt/env/$env_name"
+  $etc = "$env/etc"
+
+  sso_env { "$env_name":
+    env_name => "$env_name",
+    env => "$env",
+    etc => "$etc",
   }->
   file { "$etc/etYellowUtils.d/etYellowUtils.ini":
     content => template('etYellowUtils.ini.erb'),
@@ -131,25 +143,22 @@ class sso_monitor_env {
     mode => 0777,
   }~>
   exec { 'reload munin':
-    command => '/opt/env/hnsenv/bin/register_munin_plugins.py sso; service munin-node restart',
+    command => "$env/bin/register_munin_plugins.py sso; service munin-node restart",
   }
 }
 
 class hns_env {
-  $etc = '/home/highnoon/hnenv/etc'
-  $yellow = $::ipaddress
-  python::virtualenv { '/home/highnoon/hnenv':
-    ensure => present,
-    version => '2.7',
-    distribute => false,
-    owner => 'highnoon',
-    group => 'highnoon',
+  $env_name = 'hnenv'
+  $env = "/home/highnoon/$env_name"
+  $etc = "$env/etc"
+
+  User <| name == 'highnoon' |> {
   }->
   file { '/home/highnoon/log':
     ensure => directory,
     owner => 'highnoon',
     group => 'highnoon',
-  }
+  }->
   # TODO: remove this after you get the /root/.init files.
   # install requirements has a bug which need to write something to /root/.init/
   file { ['/root/']:
@@ -160,25 +169,33 @@ class hns_env {
     ensure => directory,
     mode => 0777,
   }->
-  file { '/etc/requirements.txt':
-    ensure => present,
-    source => 'puppet:///extra_files/requirements.txt',
-  }~>
-  exec { 'setup.sh':
-    command => 'pip install -r /etc/requirements.txt > /tmp/setup.sh.log',
-    user => 'highnoon',
+  sso_env { "$env_name":
+    env_name => "$env_name",
+    env => "$env",
+    etc => "$etc",
+    owner => 'highnoon',
     group => 'highnoon',
-    path => ['/home/highnoon/hnenv/bin/', '/usr/local/bin', '/usr/bin', '/bin'],
-    cwd => '/home/highnoon',
-    environment => ['PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
-                    'ARCHFLAGS="-arch i386 -arch x86_64"'],
-  }->
-  file { '/home/highnoon/hnenv/etc/hnYellow.d/hnYellow.ini':
-    content => template('hnYellow.ini.erb'),
   }
-  config_file { ['etYellowUtils',
-                  ]:
-    etc => $etc,
-    yellow => $yellow,
+
+  #file { '/etc/requirements.txt':
+    #ensure => present,
+    #source => 'puppet:///extra_files/requirements.txt',
+  #}~>
+  #exec { 'setup.sh':
+  #  command => 'pip install -r /etc/requirements.txt > /tmp/setup.sh.log',
+  #  user => 'highnoon',
+  #  group => 'highnoon',
+  #  path => ['/home/highnoon/hnenv/bin/', '/usr/local/bin', '/usr/bin', '/bin'],
+  #  cwd => '/home/highnoon',
+  #  environment => ['PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+  #                  'ARCHFLAGS="-arch i386 -arch x86_64"'],
+  #}->
+  file { "$etc/hnYellow.d/hnYellow.ini":
+    content => template('hnYellow.ini.erb'),
+    require => Sso_env["$env_name"],
+  }
+  file { "$etc/etYellowUtils.d/etYellowUtils.ini":
+    content => template('etYellowUtils.ini.erb'),
+    require => Sso_env["$env_name"],
   }
 }

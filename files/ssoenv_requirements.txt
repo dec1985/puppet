@@ -1,0 +1,3 @@
+happysso==0.10.23
+greenlet
+configobj

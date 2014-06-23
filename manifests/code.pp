@@ -1,9 +1,5 @@
 class hns_code {
-  user { 'highnoon':
-    ensure => 'present',
-    home => '/home/highnoon',
-    managehome => true,
-    shell => '/bin/bash',
+  User <| name == 'highnoon' |> {
   }->
   netrc::foruser{"highnoon":
     user => 'highnoon',
