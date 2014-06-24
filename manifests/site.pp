@@ -22,7 +22,7 @@ node /sso-postgres\d+/ {
 node /hns\d+/ {
   include base
   class { 'highnoon::hns':
-    yellow => hiera('yellow'),
+    yellow => $::ipaddress,
   }
 }
 

@@ -43,17 +43,19 @@ define highnoon_env($env_name,
     pkgname => 'pip',
     ensure => '1.1',
     virtualenv => "$env",
-    owner => $owner,
+    owner => "$owner",
   }->
   file { "${env}/requirements":
     source => "puppet:///modules/highnoon/${env_name}_requirements.txt",
-    owner => $owner,
-    group => $group,
+    owner => "$owner",
+    group => "$group",
   }->
   python::requirements { "${env}_packages":
     virtualenv => "$env",
     requirements => "${env}/requirements",
     environment => 'PIP_PYPI_URL=https://highnoon:JstSmthngNwO_O@pypi.happylatte.com/private/',
+    owner => "$owner",
+    group => "$group",
   }
 }
 
