@@ -1,8 +1,8 @@
 class munin::params::master {
   $message = "Unsupported osfamily ${::osfamily}"
 
-  $graph_strategy     = 'cgi'
-  $html_strategy      = 'cgi'
+  $graph_strategy     = false
+  $html_strategy      = false
   $node_definitions   = ''
   $collect_nodes      = 'enabled'
 
