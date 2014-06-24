@@ -39,23 +39,31 @@
 class highnoon {
 }
 
-class highnoon::sso {
+class highnoon::sso($yellow = '127.0.0.1') {
   include highnoon::sso_package
   include highnoon::sso_postgres
   include highnoon::env
-  include highnoon::sso_redis_env
-  include highnoon::sso_app_env
-  include highnoon::sso_monitor_env
+  class {'highnoon::sso_redis_env':
+    yellow => $yellow,
+  }
+  class { 'highnoon::sso_app_env':
+    yellow => $yellow,
+  }
+  class { 'highnoon::sso_monitor_env':
+    yellow => $yellow,
+  }
 
   Class['highnoon::sso_package'] -> Class['highnoon::sso_postgres'] -> Class['highnoon::env'] -> Class['highnoon::sso_redis_env', 'highnoon::sso_app_env', 'highnoon::sso_monitor_env']
 }
 
-class highnoon::hns {
+class highnoon::hns($yellow = '127.0.0.1') {
   include highnoon::hns_package
   include highnoon::hns_code
   include highnoon::hns_postgres
   include highnoon::env
-  include highnoon::hns_env
+  class { 'highnoon::hns_env':
+    yellow => $yellow,
+  }
 
   # postgres depends on code bacause it need to run some sql command which in code base
   Class['highnoon::hns_package'] -> Class['highnoon::hns_code'] -> Class['highnoon::hns_postgres'] -> Class['highnoon::env'] -> Class['highnoon::hns_env']

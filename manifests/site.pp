@@ -8,7 +8,9 @@ import 'nodes/*.pp'
 
 node /sso-postgres\d+/ {
   include base
-  include highnoon::sso
+  class { 'highnoon::sso':
+    yellow => hiera('yellow'),
+  }
 }
 
 #node /sso-redis\d+/ {
@@ -19,7 +21,9 @@ node /sso-postgres\d+/ {
 
 node /hns\d+/ {
   include base
-  include highnoon::hns
+  class { 'highnoon::hns':
+    yellow => hiera('yellow'),
+  }
 }
 
 node 'puppet-master' {

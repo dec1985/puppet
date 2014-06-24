@@ -1,4 +1,4 @@
-class highnoon::hns_env {
+class highnoon::hns_env($yellow) {
   $env_name = 'hnenv'
   $env = "/home/highnoon/$env_name"
   $etc = "$env/etc"

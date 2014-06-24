@@ -1,5 +1,3 @@
-$yellow = '10.171.21.248'
-
 class highnoon::env {
   file { ['/opt/env',
           '/opt/log',
@@ -59,7 +57,7 @@ define highnoon_env($env_name,
   }
 }
 
-class highnoon::sso_redis_env {
+class highnoon::sso_redis_env($yellow) {
   $env_name = 'redisenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
@@ -97,7 +95,7 @@ class highnoon::sso_redis_env {
   }
 }
 
-class highnoon::sso_app_env {
+class highnoon::sso_app_env($yellow) {
   $env_name = 'ssoenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
@@ -126,7 +124,7 @@ class highnoon::sso_app_env {
   }
 }
 
-class highnoon::sso_monitor_env {
+class highnoon::sso_monitor_env($yellow) {
   $env_name = 'monitorenv'
   $env = "/opt/env/$env_name"
   $etc = "$env/etc"
