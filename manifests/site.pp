@@ -26,7 +26,7 @@ node /hns\d+/ {
   }
 }
 
-node /^puppet-master/ {
+node 'puppet-master', 'fred-master.lan.happylatte.com' {
   include base
   include puppetmaster
   include puppetdb
