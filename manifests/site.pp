@@ -33,5 +33,6 @@ node 'puppet-master' {
 
 node default {
   include base
+  include oak
 }
 
