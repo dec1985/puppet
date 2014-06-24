@@ -75,4 +75,22 @@ class munin::master (
   if $node_definitions {
     create_resources(munin::master::node_definition, $node_definitions, {})
   }
+
+
+  file { '/etc/munin/munin-htpasswd':
+    ensure => present,
+    source => 'puppet:///modules/munin/munin-htpasswd',
+    require => Package['munin'],
+  }->
+  file { '/etc/munin/apache.conf':
+    ensure => present,
+    source => 'puppet:///modules/munin/apache.munin.conf',
+    require => Package['munin'],
+  }->
+  file { '/etc/apache2/conf.d/munin.conf':
+    ensure => link,
+    target => '/etc/munin/apache.conf',
+    require => Package['apache2'],
+    notify => Service['apache2'],
+  }
 }
