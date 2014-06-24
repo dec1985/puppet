@@ -26,7 +26,7 @@ node /hns\d+/ {
   }
 }
 
-node 'puppet-master' {
+node /^puppet-master/ {
   include base
   include puppetmaster
   include puppetdb
@@ -35,6 +35,7 @@ node 'puppet-master' {
 
 node default {
   include base
-  include oak
+  class { 'oak::client':
+  }
 }
 

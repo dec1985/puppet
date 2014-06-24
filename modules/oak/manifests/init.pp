@@ -36,5 +36,13 @@
 # Copyright 2014 Your name here, unless otherwise noted.
 #
 class oak {
+}
+
+class oak::client {
+  include oak::motd
+  include oak::puppet_client
+}
+
+class oak::xxx-server {
   include oak::motd
 }
