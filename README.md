@@ -8,15 +8,22 @@ Server install:
 wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb
 sudo dpkg -i puppetlabs-release-trusty.deb
 sudo apt-get update
-apt-get install puppetmaster
+apt-get install -y puppetmaster git
 
 3. git clone.
-cd /etc
-git clone https://github.com/dec1985/puppet.git puppet
+cd /root && git clone https://github.com/dec1985/puppet.git puppet
+rm -rf /etc/puppet && mv /root/puppet /etc
 
 4. fix the hiera.
 rm /etc/hiera.yaml
 ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
+mkdir /etc/puppet/hieradata/
+vi /etc/puppet/hieradata/golbal.yaml
+
+5. restart your puppetmaster.
+/etc/init.d/puppetmaster restart
+
+6. apply itself.
 
 Client install:
 change your machien's name: echo NAME > /etc/hostname; hostname -F /etc/hostname

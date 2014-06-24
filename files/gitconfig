@@ -1,0 +1,28 @@
+[push]
+	default = upstream
+[alias]
+	co = checkout
+	st = status
+	ci = commit
+	br = branch
+	out = "!git fetch; git cherry origin/DEFAULT -v"
+	diff = diff --color
+[apply]
+	whitespace = fix
+[user]
+	name = fred
+	email = fred@happylatte.com
+[core]
+	excludesfile = /Users/fred/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+	show = auto
