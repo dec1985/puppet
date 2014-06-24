@@ -17,6 +17,10 @@ class base {
   include system
   include ntp
   include motd
+  class { 'munin::node':
+    allow => hiera('munin_servers'),
+    mastername => hiera('munin_master_fqdn'),
+  }
 
   include custom
   # TODO: for debian os only.
@@ -24,7 +28,7 @@ class base {
     command => '/usr/bin/apt-get update',
     onlyif => "/bin/bash -c 'exit $(( $(( $(date +%s) - $(stat -c %Y /var/lib/apt/lists/$( ls /var/lib/apt/lists/ -tr1|tail -1 )) )) <= 604800 ))'"
   }->
-  package { ['htop', 'dstat', 'iotop', 'tree', 'git', 'munin']:
+  package { ['htop', 'dstat', 'iotop', 'tree', 'git']:
     ensure => present,
   }
 }
