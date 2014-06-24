@@ -17,9 +17,9 @@ class base {
   include system
   include ntp
   include motd
+  include oak
   class { 'munin::node':
     allow => hiera('munin_servers'),
-    mastername => hiera('munin_master_fqdn'),
   }
 
   include custom

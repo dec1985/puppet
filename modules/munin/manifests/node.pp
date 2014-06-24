@@ -96,9 +96,10 @@ class munin::node (
   # Export a node definition to be collected by the munin master
   if $export_node == 'enabled' {
     @@munin::master::node_definition{ $fqn:
-      address    => $address,
+      address    => $::ipaddress,
       mastername => $mastername,
       config     => $masterconfig,
+      tag        => 'exported_munin_node',
     }
   }
 

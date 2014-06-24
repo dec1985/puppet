@@ -33,6 +33,7 @@ node /^puppet-master/ {
   include puppetdb::master::config
 
   include munin::master
+
 }
 
 node default {
