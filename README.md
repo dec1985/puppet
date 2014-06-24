@@ -7,6 +7,8 @@ Server install:
 # replace trusty with precise if you're ubuntu 12.04
 wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb
 sudo dpkg -i puppetlabs-release-trusty.deb
+wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+sudo dpkg -i puppetlabs-release-precise.deb
 sudo apt-get update
 apt-get install -y puppetmaster git
 
@@ -18,7 +20,7 @@ rm -rf /etc/puppet && mv /root/puppet /etc
 rm /etc/hiera.yaml
 ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
 mkdir /etc/puppet/hieradata/
-vi /etc/puppet/hieradata/golbal.yaml
+vi /etc/puppet/hieradata/global.yaml
 
 5. restart your puppetmaster.
 /etc/init.d/puppetmaster restart
