@@ -1,0 +1,27 @@
+{
+  "checksums": {
+    "templates/motd.erb": "f2b7aab672a278944aadebf00834b835",
+    "README.markdown": "f5e6cfea23d4b5713557cab283c6c770",
+    "ryan.txt": "09f7e02f1290be211da707a266f153b3",
+    "manifests/init.pp": "acab16f3452f806b6f9790d434b5b0f1",
+    "Modulefile": "fcef59fd8bc4493f95e0277dd9a43d9c",
+    "tests/init.pp": "5086992bfbe4109aef08a6dc91736250"
+  },
+  "description": "Places information about the host in the message of the day.",
+  "summary": "Manages the message of the day",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 2.5.0"
+    }
+  ],
+  "author": "Jeff McCune <jeff@puppetlabs.com>",
+  "version": "1.2.0",
+  "types": [
+
+  ],
+  "source": "puppetlabs-motd",
+  "license": "Apache",
+  "name": "rcoleman-motd",
+  "project_page": "https://github.com/rcoleman/jeffmccune-motd"
+}

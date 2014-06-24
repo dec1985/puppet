@@ -15,8 +15,10 @@ class custom($home = '/root') {
 
 class base {
   include system
+  include ntp
+  include motd
+
   include custom
-  include '::ntp'
   # TODO: for debian os only.
   exec { 'apt-update':
     command => '/usr/bin/apt-get update',
