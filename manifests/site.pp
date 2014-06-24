@@ -29,6 +29,8 @@ node /hns\d+/ {
 node 'puppet-master' {
   include base
   include puppetmaster
+  include puppetdb
+  include puppetdb::master::config
 }
 
 node default {
