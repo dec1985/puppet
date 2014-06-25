@@ -37,6 +37,7 @@
 #
 class oak {
   include oak::motd
+  include oak::custom
 }
 
 class oak::client {
