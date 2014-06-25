@@ -28,25 +28,23 @@ class munin::master (
   $graph_strategy   = $munin::params::master::graph_strategy,
   $html_strategy    = $munin::params::master::html_strategy,
   $config_root      = $munin::params::master::config_root,
-  $collect_nodes    = $munin::params::master::collect_nodes,
-  ) inherits munin::params::master {
-
+  $collect_nodes    = $munin::params::master::collect_nodes,) inherits munin::params::master {
   if $node_definitions {
     validate_hash($node_definitions)
   }
+
   if $graph_strategy {
-    validate_re($graph_strategy, [ '^cgi$', '^cron$' ])
+    validate_re($graph_strategy, ['^cgi$', '^cron$'])
   }
+
   if $html_strategy {
-    validate_re($html_strategy, [ '^cgi$', '^cron$' ])
+    validate_re($html_strategy, ['^cgi$', '^cron$'])
   }
-  validate_re($collect_nodes,  [ '^enabled$', '^disabled$' ])
+  validate_re($collect_nodes, ['^enabled$', '^disabled$'])
   validate_absolute_path($config_root)
 
   # The munin package and configuration
-  package { 'munin':
-    ensure => latest,
-  }
+  package { 'munin': ensure => latest, }
 
   File {
     owner   => 'root',
@@ -55,9 +53,7 @@ class munin::master (
     require => Package['munin'],
   }
 
-  file { "${config_root}/munin.conf":
-    content => template('munin/munin.conf.erb'),
-  }
+  file { "${config_root}/munin.conf": content => template('munin/munin.conf.erb'), }
 
   file { "${config_root}/munin-conf.d":
     ensure  => directory,
@@ -73,24 +69,30 @@ class munin::master (
 
   # Create static node definitions
   if $node_definitions {
-    create_resources(munin::master::node_definition, $node_definitions, {})
+    create_resources(munin::master::node_definition, $node_definitions, {
+    }
+    )
   }
 
-
+  file { '/etc/apache2/mods-enabled/authn_core.load':
+    require => Class['apache'],
+    ensure  => link,
+    target  => '../mods-available/authn_core.load',
+    notify  => Service['apache2'],
+  } ->
   file { '/etc/munin/munin-htpasswd':
-    ensure => present,
-    source => 'puppet:///modules/munin/munin-htpasswd',
+    ensure  => present,
+    source  => 'puppet:///modules/munin/munin-htpasswd',
     require => Package['munin'],
-  }->
+  } ->
   file { '/etc/munin/apache.conf':
-    ensure => present,
-    source => 'puppet:///modules/munin/apache.munin.conf',
+    ensure  => present,
+    source  => 'puppet:///modules/munin/apache.munin.conf',
     require => Package['munin'],
-  }->
+  } ->
   file { '/etc/apache2/conf.d/munin.conf':
     ensure => link,
     target => '/etc/munin/apache.conf',
-    require => Package['apache2'],
     notify => Service['apache2'],
   }
 }

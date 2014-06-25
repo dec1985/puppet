@@ -10,3 +10,5 @@ function backup () {
     echo "Backed up $1 to $newname.";
     cp -p $newname $1
 }
+
+alias p="puppet"

@@ -41,9 +41,10 @@ class oak {
 
 class oak::client {
   include oak
-  include oak::puppet_client
+  # TODO: manage /etc/defaults/{puppetmaster, puppet}, use hiera + template to manage it!
+  #  include oak::puppet_client
 }
 
-class oak::xxx-server {
+class oak::xxx_server {
   include oak
 }

@@ -4,15 +4,18 @@ vardir=/var/lib/puppet
 ssldir=/var/lib/puppet/ssl
 rundir=/var/run/puppet
 factpath=/lib/facter
-templatedir=/templates
-prerun_command=/etc/puppet/etckeeper-commit-pre
-postrun_command=/etc/puppet/etckeeper-commit-post
-server=fred-master.lan.happylatte.com
-pluginsync=true
 
 [master]
 # These are needed when the puppetmaster is run by passenger
 # and can safely be removed if webrick is used.
 ssl_client_header = SSL_CLIENT_S_DN
 ssl_client_verify_header = SSL_CLIENT_VERIFY
+storeconfigs = true
+storeconfigs_backend = puppetdb
 
+[agent]
+report=true
+listen=true
+pluginsync=true
+server=<%= @puppet_server %>
+masterport=<%= @puppet_server_port %>
