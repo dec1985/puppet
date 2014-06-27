@@ -1,5 +1,5 @@
 class base {
-  include system
+  #  include system
   include ntp
   include motd
 
@@ -11,4 +11,5 @@ class base {
   package { ['htop', 'dstat', 'iotop', 'tree']: ensure => present, }
   # fred's module
   include oak
+
 }
