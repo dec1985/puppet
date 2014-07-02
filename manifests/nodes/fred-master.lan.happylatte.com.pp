@@ -2,7 +2,8 @@ node 'fred-master.lan.happylatte.com' {
   include base
 
   class { 'munin::node': allow => hiera('munin_servers'), }
-  include munin::master
+
+  #  include munin::master
 
   class { '::oak::puppet_agent':
     puppet_server      => 'fred-master.lan.happylatte.com',

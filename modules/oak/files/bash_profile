@@ -3,6 +3,7 @@ if [ -f ~/.bashrc ]; then
 fi
 
 export EDITOR=vi
+set -o ignoreeof
 
 function backup () {
     newname=$1.`date +%Y%m%d.%H%M.bak`

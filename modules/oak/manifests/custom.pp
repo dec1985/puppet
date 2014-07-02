@@ -1,9 +1,9 @@
 class oak::custom ($home = '/root') {
-  file { "$home/.gitconfig": source => 'puppet:///extra_files/gitconfig', }
+  file { "$home/.gitconfig": source => 'puppet:///modules/oak/gitconfig', }
 
-  file { "$home/.vimrc": source => 'puppet:///extra_files/vimrc', }
+  file { "$home/.vimrc": source => 'puppet:///modules/oak/vimrc', }
 
-  file { "$home/.screenrc": source => 'puppet:///extra_files/screenrc', }
+  file { "$home/.screenrc": source => 'puppet:///modules/oak/screenrc', }
 
-  file { "$home/.bash_profile": source => 'puppet:///extra_files/bash_profile', }
+  file { "$home/.bash_profile": source => 'puppet:///modules/oak/bash_profile', }
 }
